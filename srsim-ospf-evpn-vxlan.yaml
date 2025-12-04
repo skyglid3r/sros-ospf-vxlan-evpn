@@ -1,0 +1,119 @@
+# Copyright 2023 Nokia
+# Licensed under the BSD 3-Clause License.
+# SPDX-License-Identifier: BSD-3-Clause
+# Author: amerf@outlook.com (github: skyglid3r)
+name: sfmix-evpn
+prefix: ""
+topology:
+  nodes:
+    pe1:
+      kind: nokia_srsim
+      image: localhost/nokia/srsim:25.7.R1
+      type: sr-1
+      license: ./sfmix-srsim-25.txt
+      startup-config: ./configs/pe1_config.txt
+      env:
+        NOKIA_SROS_MDA_1: me12-100gb-qsfp28  
+      #ports:
+      #  - 51001:22
+      #  - 51301:57400
+      #  - 51401:830
+    pe2:
+      kind: nokia_srsim
+      image: localhost/nokia/srsim:25.7.R1
+      type: sr-1
+      license: ./sfmix-srsim-25.txt
+      startup-config: ./configs/pe2_config.txt
+
+      env:
+        NOKIA_SROS_MDA_1: me12-100gb-qsfp28
+      
+      #ports:
+      #  - 52001:22
+      #  - 52301:57400
+      #  - 52401:830    
+    gw-pe:
+      kind: nokia_srsim
+      image: localhost/nokia/srsim:25.7.R1
+      type: sr-1
+      license: ./sfmix-srsim-25.txt
+      startup-config: ./configs/gw_pe_config.txt
+      
+      env:
+        NOKIA_SROS_MDA_1: me12-100gb-qsfp28
+
+      #ports:
+      #  - 53001:22
+      #  - 53301:57400
+      #  - 53401:830
+
+    client1:
+      kind: linux
+      image: ghcr.io/mfzhsn/network-multitool-sshd:0.0.2
+      exec:
+        - ip link add bond0 type bond mode 802.3ad lacp_rate fast
+        - ip link set address 00:00:00:00:00:11 dev bond0
+        - ip link set eth1 down
+        - ip link set eth1 master bond0
+        - ip link set eth1 up
+        - ip link set bond0 up
+        - ip link add link bond0 name bond0.10 type vlan id 10
+        - ip link add link bond0 name bond0.20 type vlan id 20
+        - ip link add link bond0 name bond0.30 type vlan id 30
+        - ip link add link bond0 name bond0.40 type vlan id 40
+        - ip link set bond0.10 up
+        - ip link set bond0.20 up
+        - ip link set bond0.30 up
+        - ip link set bond0.40 up
+        - ip addr add 192.168.10.1/24 dev bond0.10
+        - ip addr add 192.168.20.1/24 dev bond0.20
+        - ip addr add 192.168.30.1/24 dev bond0.30
+        - ip addr add 192.168.100.10/24 dev bond0.40
+        - ip route add 192.168.200.0/24 via 192.168.100.1
+    
+    client2:
+      kind: linux
+      image: ghcr.io/mfzhsn/network-multitool-sshd:0.0.2
+      exec:
+        - ip link add bond0 type bond mode 802.3ad lacp_rate fast
+        - ip link set address 00:00:00:00:00:21 dev bond0
+        - ip link set eth1 down
+        - ip link set eth1 master bond0
+        - ip link set eth1 up
+        - ip link set bond0 up
+        - ip link add link bond0 name bond0.10 type vlan id 10
+        - ip link add link bond0 name bond0.20 type vlan id 20
+        - ip link add link bond0 name bond0.30 type vlan id 30
+        - ip link add link bond0 name bond0.40 type vlan id 40
+        - ip link set bond0.10 up
+        - ip link set bond0.20 up
+        - ip link set bond0.30 up
+        - ip link set bond0.40 up
+        - ip addr add 192.168.10.2/24 dev bond0.10
+        - ip addr add 192.168.20.2/24 dev bond0.20
+        - ip addr add 192.168.30.2/24 dev bond0.30
+        - ip addr add 192.168.200.10/24 dev bond0.40
+        - ip route add 192.168.100.0/24 via 192.168.200.1
+
+    client3:
+      kind: linux
+      image: ghcr.io/mfzhsn/network-multitool-sshd:0.0.2
+      exec:
+        - ip link add bond0 type bond mode 802.3ad lacp_rate fast
+        - ip link set address 00:00:00:00:00:31 dev bond0
+        - ip link set eth1 down
+        - ip link set eth1 master bond0
+        - ip link set eth1 up
+        - ip link set bond0 up
+        - ip link add link bond0 name bond0.30 type vlan id 30
+        - ip link set bond0.30 up
+        - ip addr add 192.168.30.3/24 dev bond0.30
+
+  links:
+   
+    - endpoints: ["client1:eth1", "pe1:1/1/c4/1"]
+    - endpoints: ["client2:eth1", "pe2:1/1/c4/1"]
+    - endpoints: ["gw-pe:1/1/c1/1", "pe1:1/1/c5/1"]
+    - endpoints: ["gw-pe:1/1/c2/1", "pe2:1/1/c5/1"]
+    - endpoints: ["gw-pe:1/1/c3/1", "client3:eth1"]
+
