@@ -115,6 +115,7 @@ show router bgp routes evpn ip-prefix  # EVPN Type-5 (L3)
 🔍 5. Services – L2 & L3
 
 L2 EVPN (Type-2) – VPLS 30
+edit-config global
 info flat configure service vpls 30
 
 L3 EVPN (Type-5) – R-VPLS 200 + VPRN 100
@@ -131,12 +132,12 @@ info flat configure service
 
 🔍 7. End-to-End Connectivity (Examples)
 
-In VRF 100:
+In VPRN/VRF 100:
 From PE1:
-ping router 100 192.168.200.1
+ping 192.168.200.1 router-instance "100"
 
 From PE2:
-ping router 100 192.168.100.1
+ping 192.168.100.1 router-instance "100"
 
 From client1:
 ping 192.168.200.10(Type5)
