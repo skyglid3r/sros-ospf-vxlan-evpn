@@ -2,7 +2,7 @@
 # Licensed under the BSD 3-Clause License.
 # SPDX-License-Identifier: BSD-3-Clause
 # Author: amerf@outlook.com (github: skyglid3r)
-name: sfmix-evpn
+name: ospf-evpn
 prefix: ""
 topology:
   nodes:
