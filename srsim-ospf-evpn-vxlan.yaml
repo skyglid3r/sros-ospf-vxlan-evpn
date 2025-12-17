@@ -10,7 +10,7 @@ topology:
       kind: nokia_srsim
       image: localhost/nokia/srsim:25.7.R1
       type: sr-1
-      license: ./srsim-25.txt
+      license: /home/nokiauser/images/srsim-25.txt
       startup-config: ./configs/pe1_config.txt
       env:
         NOKIA_SROS_MDA_1: me12-100gb-qsfp28  
