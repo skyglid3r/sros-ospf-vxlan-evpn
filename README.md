@@ -104,6 +104,13 @@ curl -sL https://containerlab.dev/setup | sudo -E bash -s "all"
 
 **Logout and login for the sudo privileges to take effect.**
 
+Load the SR-SIM docker image:
+
+```
+cd images
+docker load -i srsim.tar.xz
+```
+
 Clone the Git repo to your VM:
 
 ```
